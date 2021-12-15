@@ -1,8 +1,12 @@
 import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from 'react-native-splash-screen';
 import HomeScreen from './src/screens/HomeScreen';
+import {colors} from './src/utils/colors';
+
+const navTheme = DefaultTheme;
+navTheme.colors.background = colors.backgroundApp;
 
 const Stack = createNativeStackNavigator();
 
@@ -11,7 +15,7 @@ function App() {
     SplashScreen.hide();
   });
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navTheme}>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>

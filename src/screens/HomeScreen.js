@@ -12,12 +12,12 @@ const HomeScreen = ({navigation}) => {
       </View>
       <Button title="Go to Camera Demo" onPress={() => navigate('Camera')} />
       <Button
-        title="Go to Location Demo"
-        onPress={() => navigate('Location')}
+        title="Go to Auth Demo"
+        onPress={() => navigate('BiometricData')}
       />
       <Button
-        title="Go to Face Detection Demo"
-        onPress={() => navigate('FaceDetection')}
+        title="Go to Location Demo"
+        onPress={() => navigate('Location')}
       />
     </View>
   );

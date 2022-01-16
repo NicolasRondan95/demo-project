@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from 'react-native-splash-screen';
 import HomeScreen from './src/screens/HomeScreen';
 import LocationDemoScreen from './src/screens/LocationDemoScreen';
+import BiometricDataScreen from './src/screens/BiometricDataScreen';
 import {colors} from './src/utils/colors';
 
 const navTheme = DefaultTheme;
@@ -20,6 +21,11 @@ function App() {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Location" component={LocationDemoScreen} />
+        <Stack.Screen
+          name="BiometricData"
+          component={BiometricDataScreen}
+          options={{title: 'Native Auth'}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

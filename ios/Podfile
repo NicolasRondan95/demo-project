@@ -12,6 +12,10 @@ target 'demoproject' do
     :hermes_enabled => false
   )
 
+  pod 'TouchID', :path => '../node_modules/react-native-touch-id'
+
+  pod 'RNKeychain', :path => '../node_modules/react-native-keychain'
+
   target 'demoprojectTests' do
     inherit! :complete
     # Pods for testing

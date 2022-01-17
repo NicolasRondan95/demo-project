@@ -13,6 +13,10 @@ const {width, height} = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+const TOPTIVE_COORDS = {
+  latitude: -33.1329925,
+  longitude: -64.3525736,
+};
 
 const LocationDemoScreen = () => {
   const [location, setLocation] = useState({
@@ -67,7 +71,9 @@ const LocationDemoScreen = () => {
         console.log('GET LOCATION: ', position.coords);
       },
       error => {
-        setLocation(null);
+        setLocation({
+          coords: {latitude: 0, longitude: 0},
+        });
         console.log(error);
       },
       {
@@ -95,7 +101,9 @@ const LocationDemoScreen = () => {
       },
       error => {
         console.log(error);
-        setLocation(null);
+        setLocation({
+          coords: {latitude: 0, longitude: 0},
+        });
       },
       {
         enableHighAccuracy: true,
@@ -121,24 +129,27 @@ const LocationDemoScreen = () => {
         <RNMapView
           style={StyleSheet.absoluteFillObject}
           region={{
+            // latitude: TOPTIVE_COORDS.latitude,
+            // longitude: TOPTIVE_COORDS.longitude,
             latitude: location?.coords.latitude,
             longitude: location?.coords.longitude,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}>
-          <Marker coordinate={location.coords} />
+          {/* <Marker coordinate={TOPTIVE_COORDS} /> */}
+          {<Marker coordinate={location.coords} />}
         </RNMapView>
       </View>
-      <View style={styles.controlsWrapperr}>
+      <View style={styles.controlsWrapper}>
         <Button title="Get Location" color={'#5041E8'} onPress={getLocation} />
         <Button
-          title="Start Observing"
+          title="Start Tracking"
           color={'#5041E8'}
           onPress={trackLocation}
           disabled={tracking}
         />
         <Button
-          title="Stop Observing"
+          title="Stop Tracking"
           color={'#5041E8'}
           onPress={removeLocationTracking}
           disabled={!tracking}
@@ -158,7 +169,7 @@ const styles = StyleSheet.create({
   mapWrapper: {
     flex: 1,
   },
-  controlsWrapperr: {
+  controlsWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',

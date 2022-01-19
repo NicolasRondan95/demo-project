@@ -5,6 +5,7 @@ import SplashScreen from 'react-native-splash-screen';
 import HomeScreen from './src/screens/HomeScreen';
 import LocationDemoScreen from './src/screens/LocationDemoScreen';
 import BiometricDataScreen from './src/screens/BiometricDataScreen';
+import Camera from './src/screens/CameraScreen';
 import {colors} from './src/utils/colors';
 
 const navTheme = DefaultTheme;
@@ -26,6 +27,7 @@ function App() {
           component={BiometricDataScreen}
           options={{title: 'Native Auth'}}
         />
+        <Stack.Screen name="Camera" component={Camera} />
       </Stack.Navigator>
     </NavigationContainer>
   );

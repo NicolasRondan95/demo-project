@@ -53,5 +53,10 @@
 	<false/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick and secure access to your account.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>For taking photos</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>For saving photos</string>
 </dict>
 </plist>

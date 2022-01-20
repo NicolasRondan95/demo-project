@@ -1,9 +1,17 @@
-import React, {useState} from 'react';
-import {View, TextInput, Text, Alert, StyleSheet} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  TextInput,
+  Text,
+  Alert,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import TouchID from 'react-native-touch-id';
-import * as keychan from 'react-native-keychain';
+import * as keychain from 'react-native-keychain';
 import Button from '../components/Button';
 
+// Config for auth request
 const optionalConfigObject = {
   title: 'Authentication Required', // Android
   imageColor: '#e00606', // Android
@@ -19,55 +27,97 @@ const optionalConfigObject = {
 function BiometricDataScreen() {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [userData, setUserData] = useState({});
+  const [isAuth, setIsAuth] = useState(false);
+  const [biometryType, setBiometryType] = useState(null);
 
-  const auth = async () => {
-    try {
-      let msg;
-      const authType = await TouchID.isSupported(optionalConfigObject);
-
-      const credentials = await keychan.getGenericPassword();
-      const {username: storedUsername, password: storedPassword} = credentials;
-
-      switch (authType) {
-        case 'TouchID':
-          msg = 'Auth with touch id';
-          break;
-        case 'FaceID':
-          msg = 'Auth with Face id';
-          break;
-      }
-
-      if (authType) {
-        await TouchID.authenticate(msg, optionalConfigObject);
-        if (storedUsername && storedPassword) {
-          Alert.alert(
-            `Authenticated Successfully: ${storedUsername} ${storedPassword}`,
+  useEffect(() => {
+    (async () => {
+      try {
+        const credentials = await keychain.getGenericPassword();
+        if (credentials) {
+          setIsAuth(true);
+          setUserData(credentials);
+          console.log(
+            `Credentials successfully loaded for user ${credentials.username}`,
           );
         } else {
-          // Encript data and save in the telephone
-          keychan.setGenericPassword(username, password);
+          console.log('No credentials stored');
         }
+        // Check if the device supports biometric data
+        const biometryType = await TouchID.isSupported(optionalConfigObject);
+        setBiometryType(biometryType);
+      } catch (err) {
+        console.log(err);
       }
-    } catch (error) {
-      Alert.alert(`Authentication Failed: ${error.code}`);
+    })();
+  }, []);
+
+  const auth = async () => {
+    if (!username || !password) return;
+    try {
+      // Handle authentication
+      let msg;
+      switch (biometryType) {
+        case 'TouchID':
+          msg = 'Auth with TouchID';
+          break;
+        case 'FaceID':
+          msg = 'Auth with FaceID';
+          break;
+      }
+      if (biometryType) {
+        await TouchID.authenticate(msg, optionalConfigObject);
+        Alert.alert(`Authenticated Successfully: ${username}!`);
+      }
+      // Encript data and save in the device
+      await keychain.setGenericPassword(username, password);
+      setUserData({username, password});
+      setUsername('');
+      setPassword('');
+      setIsAuth(true);
+    } catch (err) {
+      Alert.alert(`Authentication Failed: ${err}`);
+    }
+  };
+
+  const exit = async () => {
+    const result = await keychain.resetGenericPassword();
+    console.log(`User credentials removed: ${result}`);
+    if (result) {
+      setIsAuth(false);
+      setUserData({});
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Username</Text>
-      <TextInput
-        style={styles.textInput}
-        value={username}
-        onChangeText={text => setUsername(text)}
-      />
-      <Text style={styles.text}>Password</Text>
-      <TextInput
-        style={styles.textInput}
-        value={password}
-        onChangeText={text => setPassword(text)}
-      />
-      <Button title="Auth" onPress={auth} />
+      {isAuth ? (
+        <View>
+          <Text style={styles.title}>Hi, {userData.username}!</Text>
+          <Button title="Exit" onPress={exit} />
+        </View>
+      ) : (
+        <View>
+          <Text style={styles.title}>Auth Form</Text>
+          <Text style={styles.text}>Username</Text>
+          <TextInput
+            style={styles.textInput}
+            value={username}
+            placeholder="Type username"
+            onChangeText={text => setUsername(text)}
+          />
+          <Text style={styles.text}>Password</Text>
+          <TextInput
+            style={styles.textInput}
+            value={password}
+            placeholder="Type password"
+            secureTextEntry
+            onChangeText={text => setPassword(text)}
+          />
+          <Button title="Auth" onPress={auth} />
+        </View>
+      )}
     </View>
   );
 }
@@ -76,13 +126,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textInput: {
     height: 40,
+    color: 'black',
+    width: Dimensions.get('window').width * 0.8,
+    padding: 5,
     borderWidth: 1,
-    marginBottom: 16,
     backgroundColor: 'white',
     borderColor: 'black',
+  },
+  title: {
+    color: 'white',
+    marginBottom: 16,
+    fontSize: 30,
   },
   text: {
     color: 'white',

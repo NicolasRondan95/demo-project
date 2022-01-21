@@ -5,6 +5,7 @@ import {
   View,
   PermissionsAndroid,
   Button,
+  Platform,
 } from 'react-native';
 import RNMapView, {Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
@@ -32,7 +33,22 @@ const LocationDemoScreen = () => {
     };
   }, [removeLocationTracking]);
 
+  const hasPermissionIOS = async () => {
+    const status = await Geolocation.requestAuthorization('whenInUse');
+
+    if (status === 'granted') {
+      return true;
+    }
+
+    return false;
+  };
+
   const requestPermissions = async () => {
+    if (Platform.OS === 'ios') {
+      const hasPermission = await hasPermissionIOS();
+      return hasPermission;
+    }
+
     const hasPermission = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
     );
